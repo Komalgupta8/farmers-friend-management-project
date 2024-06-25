@@ -1,13 +1,8 @@
 const express = require('express');
-
 const app = express();
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
-
-app.get('/', (req, res) => {
-  res.send('Homepage');
-});
-
+const axios = require('axios');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -16,7 +11,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const users = [];
 const farms = [];
 
-// API endpoints
+
+app.get('/', (req, res) => {
+  res.send('Homepage');
+});
+
 
 // Register
 app.post('/register', (req, res) => {
@@ -39,8 +38,23 @@ app.post('/login', (req, res) => {
 });
 
 // Dashboard (protected route)
-app.get('/dashboard', verifyToken, (req, res) => {
-  res.send('Welcome to your dashboard!');
+
+
+app.get('/dashboard', async (req, res) => {
+  const location = 'Mathura';
+
+  try {
+    const weatherResponse = await axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=3bd51442b1e3c2a556a48ac32d00ea19`);
+    const weatherData = weatherResponse.data;
+    const tempCelsius = weatherData.main.temp;
+    const tempFahrenheit = (tempCelsius * 9/5) + 32;
+    const weatherReport = `Current weather in ${location}: ${weatherData.weather[0].description} with a temperature of ${tempCelsius}°C (${tempFahrenheit}°F)`;
+
+    res.send(`Your Weather Report =>  ${weatherReport}`);
+  } catch (error) {
+    console.error(error);
+    res.send('Error fetching weather data');
+  }
 });
 
 // My Farm (protected route)
