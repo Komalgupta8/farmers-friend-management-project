@@ -40,8 +40,11 @@ app.post('/login', (req, res) => {
 // Dashboard (protected route)
 
 
+
 app.get('/dashboard', async (req, res) => {
   const location = 'Mathura';
+  const schemeApiUrl = 'https://apisetu.gov.in/api/schemes/farmers'; // Replace with the actual API URL
+  const schemeApiKey = 'YOUR_API_KEY'; // Replace with your API key
 
   try {
     const weatherResponse = await axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=3bd51442b1e3c2a556a48ac32d00ea19`);
@@ -49,8 +52,26 @@ app.get('/dashboard', async (req, res) => {
     const tempCelsius = weatherData.main.temp;
     const tempFahrenheit = (tempCelsius * 9/5) + 32;
     const weatherReport = `Current weather in ${location}: ${weatherData.weather[0].description} with a temperature of ${tempCelsius}°C (${tempFahrenheit}°F)`;
-
     res.send(`Your Weather Report =>  ${weatherReport}`);
+    try {
+      const schemeResponse = await axios.get(schemeApiUrl, {
+        headers: {
+          'Authorization': `Bearer ${schemeApiKey}`,
+        },
+      });
+      const schemeData = schemeResponse.data;
+      const schemeList = schemeData.map(scheme => `<li>${scheme.schemeName} - ${scheme.description}</li>`).join('');
+
+      res.send(`
+        <p>Schemes for Farmers:</p>
+        <ul>
+          ${schemeList}
+        </ul>
+      `);
+    } catch (error) {
+      console.error(error);
+      res.send('Error fetching scheme data');
+    }
   } catch (error) {
     console.error(error);
     res.send('Error fetching weather data');
