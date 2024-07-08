@@ -3,6 +3,14 @@ const app = express();
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
+const mongoose = require('mongoose');
+const User = require('./Models/user.model');
+const Farm = require('./Models/farm.model');
+
+mongoose.connect('mongodb://localhost:27017/mydatabase', { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((err) => console.error('Error connecting to MongoDB:', err));
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -17,31 +25,48 @@ app.get('/', (req, res) => {
 });
 
 
-// Register
-app.post('/register', (req, res) => {
-  const { username, password, email } = req.body;
-  const user = { username, password, email };
-  users.push(user);
-  res.send(`User created successfully!`);
-});
 
-// Login
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-  const user = users.find(u => u.username === username && u.password === password);
-  if (!user) {
-    res.status(401).send('Invalid username or password');
-  } else {
-    const token = jwt.sign({ userId: user.id }, 'secretkey', { expiresIn: '1h' });
-    res.send({ token });
+// Register
+app.post('/register', async (req, res) => {
+  const { username, password, email } = req.body;
+  try {
+    // Check if a user with the same username or email already exists
+    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    if (existingUser) {
+      return res.status(400).send('Username or email already taken');
+    }
+
+    const user = new User({ username, password, email });
+    await user.save();
+    res.send(`User created successfully!`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error creating user');
   }
 });
+// Login
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const user = await User.findOne({ username, password });
+    if (!user) {
+      res.status(401).send('Invalid username or password');
+    } else {
+      const token = jwt.sign({ userId: user.id }, 'ecretkey', { expiresIn: '1h' });
+      res.send({ token });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error logging in');
+  }
+});
+
 
 // Dashboard (protected route)
 
 
 
-app.get('/dashboard', async (req, res) => {
+app.get('/dashboard',verifyToken, async (req, res) => {
   const location = 'Mathura';
   const schemeApiUrl = 'https://apisetu.gov.in/api/schemes/farmers'; // Replace with the actual API URL
   const schemeApiKey = 'YOUR_API_KEY'; // Replace with your API key
@@ -53,25 +78,25 @@ app.get('/dashboard', async (req, res) => {
     const tempFahrenheit = (tempCelsius * 9/5) + 32;
     const weatherReport = `Current weather in ${location}: ${weatherData.weather[0].description} with a temperature of ${tempCelsius}°C (${tempFahrenheit}°F)`;
     res.send(`Your Weather Report =>  ${weatherReport}`);
-    try {
-      const schemeResponse = await axios.get(schemeApiUrl, {
-        headers: {
-          'Authorization': `Bearer ${schemeApiKey}`,
-        },
-      });
-      const schemeData = schemeResponse.data;
-      const schemeList = schemeData.map(scheme => `<li>${scheme.schemeName} - ${scheme.description}</li>`).join('');
+    // try {
+    //   const schemeResponse = await axios.get(schemeApiUrl, {
+    //     headers: {
+    //       'Authorization': `Bearer ${schemeApiKey}`,
+    //     },
+    //   });
+    //   const schemeData = schemeResponse.data;
+    //   const schemeList = schemeData.map(scheme => `<li>${scheme.schemeName} - ${scheme.description}</li>`).join('');
 
-      res.send(`
-        <p>Schemes for Farmers:</p>
-        <ul>
-          ${schemeList}
-        </ul>
-      `);
-    } catch (error) {
-      console.error(error);
-      res.send('Error fetching scheme data');
-    }
+    //   res.send(`
+    //     <p>Schemes for Farmers:</p>
+    //     <ul>
+    //       ${schemeList}
+    //     </ul>
+    //   `);
+    // } catch (error) {
+    //   console.error(error);
+    //   res.send('Error fetching scheme data');
+    // }
   } catch (error) {
     console.error(error);
     res.send('Error fetching weather data');
@@ -79,18 +104,28 @@ app.get('/dashboard', async (req, res) => {
 });
 
 // My Farm (protected route)
-app.get('/myfarm', verifyToken, (req, res) => {
+app.get('/myfarm', verifyToken, async (req, res) => {
   const userId = req.user.id;
-  const farm = farms.find(f => f.userId === userId);
-  res.send(farm);
+  try {
+    const farm = await Farm.findOne({ userId });
+    res.send(farm);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error fetching farm data');
+  }
 });
 
 // Start Farming (protected route)
-app.post('/startfarming', verifyToken, (req, res) => {
+app.post('/startfarming', verifyToken, async (req, res) => {
   const userId = req.user.id;
-  const farm = { userId, crops: [] };
-  farms.push(farm);
-  res.send('Farming started successfully!');
+  try {
+    const farm = new Farm({ userId, crops: [] });
+    await farm.save();
+    res.send('Farming started successfully!');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error starting farming');
+  }
 });
 
 // Shop (protected route)
@@ -109,12 +144,19 @@ function verifyToken(req, res, next) {
   if (!token) {
     return res.status(401).send('No token provided');
   }
-  jwt.verify(token, 'secretkey', (err, decoded) => {
+  jwt.verify(token, 'ecretkey', (err, decoded) => {
     if (err) {
       return res.status(401).send('Invalid token');
     }
-    req.user = users.find(u => u.id === decoded.userId);
-    next();
+    User.findById(decoded.userId).then(user => {
+      if (!user) {
+        return res.status(401).send('Invalid token');
+      }
+      req.user = user;
+      next();
+    }).catch(err => {
+      return res.status(401).send('Invalid token');
+    });
   });
 }
 
