@@ -1,7 +1,10 @@
 const axios = require('axios');
+const UserModel = require("../Models/UserSchema");
 
 exports.weatherReport = async (req, res) => {
-    const location = 'Delhi';
+  const data = req.body;
+  const location = data.Address;
+  console.log(location);
     try {
       const weatherResponse = await axios.get(process.env.Weather_API);
       const weatherData = weatherResponse.data;
