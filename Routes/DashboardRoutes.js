@@ -3,7 +3,7 @@ const { weatherReport } = require('../Middleware/DashboardMiddleware');
 
 const DashboardRoutes = express.Router();
 
-DashboardRoutes.get('/dashboard',weatherReport);
+DashboardRoutes.post('/dashboard',weatherReport);
 
 
 module.exports = (DashboardRoutes)

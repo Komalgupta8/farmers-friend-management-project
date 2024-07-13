@@ -1,19 +1,57 @@
 const axios = require('axios');
-const UserModel = require("../Models/UserSchema");
+const UserModel = require('../Models/UserSchema');
+const jwt = require('jsonwebtoken');
+
+const getWeatherReport = async (location, key) => {
+  try {
+    const weatherResponse = await axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=${key}`);
+    const weatherData = weatherResponse.data;
+    const tempCelsius = weatherData.main.temp;
+    const tempFahrenheit = (tempCelsius * 9) / 5 + 32;
+    return `Current weather in ${location}: ${weatherData.weather[0].description} with a temperature of ${tempCelsius}°C (${tempFahrenheit}°F)`;
+  } catch (error) {
+    throw new Error(`Error fetching weather data: ${error.message}`);
+  }
+};
+
+const verifyToken = (token, secretKey) => {
+  try {
+    return jwt.verify(token, secretKey);
+  } catch (error) {
+    throw new Error('Invalid token');
+  }
+};
+
+const getUserLocation = async (id) => {
+  try {
+    const user = await UserModel.findById(id);
+    return user.Address;
+  } catch (error) {
+    throw new Error(`Error fetching user location: ${error.message}`);
+  }
+};
 
 exports.weatherReport = async (req, res) => {
-  const data = req.body;
-  const location = data.Address;
-  console.log(location);
-    try {
-      const weatherResponse = await axios.get(process.env.Weather_API);
-      const weatherData = weatherResponse.data;
-      const tempCelsius = weatherData.main.temp;
-      const tempFahrenheit = (tempCelsius * 9/5) + 32;
-      const weatherReport = `Current weather in ${location}: ${weatherData.weather[0].description} with a temperature of ${tempCelsius}°C (${tempFahrenheit}°F)`;
-      res.send(`Your Weather Report =>  ${weatherReport}`);
-    } catch (error) {
-      console.error(error);
-      res.send('Error fetching weather data');
+  // const { id } = req.body;
+  const token = req.headers.authtoken;
+  const key = process.env.Weather_API;
+  const secretKey = process.env.JWT_SECRET_KEY;
+
+  if (!token) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
+
+  try {
+    const decoded = verifyToken(token, secretKey);
+    if (!decoded.response._id) {
+      return res.status(401).json({ message: 'Invalid token' });
     }
-  };
+    const userid = decoded.response._id;
+    const location = await getUserLocation(userid);
+    const weatherReport = await getWeatherReport(location, key);
+    return res.send(`Your Weather Report => ${weatherReport}`);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+}; 

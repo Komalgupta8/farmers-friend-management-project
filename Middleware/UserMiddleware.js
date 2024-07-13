@@ -39,8 +39,8 @@ exports.LoginUser = async(req,res)=>{
       const pass = response.Password;
       const check = await bcrypt.compare(Password,pass)
       if(check==true){
-        const token = jwt.sign({response},process.env.JWT_SECRET_KEY);
-        return res.status(200).json({message:"Login Succesfull",Token :token})
+        const token = jwt.sign({response},process.env.JWT_SECRET_KEY,{expiresIn: "5hr"});
+        return res.cookie('authtoken' , token , {httpOnly:true , secure:true}).status(200).json({message:"Login Succesfull",Token :token})
       }
       return res.status(501).json({message:"Password Missmatch"})
     }
