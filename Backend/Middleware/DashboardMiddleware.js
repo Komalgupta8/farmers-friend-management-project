@@ -2,6 +2,7 @@ const axios = require('axios');
 const UserModel = require('../Models/UserSchema');
 const jwt = require('jsonwebtoken');
 
+
 const getWeatherReport = async (location, key) => {
   try {
     const weatherResponse = await axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=${key}`);
@@ -32,7 +33,6 @@ const getUserLocation = async (id) => {
 };
 
 exports.weatherReport = async (req, res) => {
-  // const { id } = req.body;
   const token = req.headers.authtoken;
   const key = process.env.Weather_API;
   const secretKey = process.env.JWT_SECRET_KEY;

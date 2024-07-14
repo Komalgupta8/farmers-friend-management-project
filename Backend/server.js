@@ -5,6 +5,7 @@ const UserRoutes = require('./Routes/UserRoutes');
 const DashboardRoutes = require('./Routes/DashboardRoutes');
 require("./Connection/conn")
 const cookieParser = require('cookie-parser');
+const AiRoutes = require('./Routes/AiRoutes');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -17,6 +18,7 @@ app.get('/', (req, res) => {
 
 app.use(UserRoutes)
 app.use(DashboardRoutes)
+app.use(AiRoutes)
 
 
 
