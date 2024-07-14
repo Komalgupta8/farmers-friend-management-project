@@ -3,7 +3,7 @@ const { CreateFarm } = require('../Middleware/AiMiddleware');
 
 const AiRoutes = express.Router();
 
-AiRoutes.post('/createfarm',CreateFarm);
+AiRoutes.post('/createfarm',CreateFarm);  
 
 
 

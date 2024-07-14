@@ -47,7 +47,7 @@ const FarmSchema = mongoose.Schema({
         "trim" : true
     }
 
-})
+})   
 
 const FarmModel = mongoose.model("MyFarm",FarmSchema);
 module.exports=FarmModel;
