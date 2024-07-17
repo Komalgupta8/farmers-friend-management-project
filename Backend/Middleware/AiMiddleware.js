@@ -100,19 +100,21 @@ async function run(farmData) {
     } else {
       console.log(`Invalid JSON response: ${text}`);
     }
-
-   
   } catch (error) {
     if (
       error instanceof GoogleGenerativeAIResponseError &&
       error.message.includes("SAFETY")
     ) {
       console.error("Response blocked due to safety concerns:", error);
-      res.status(501).json({message:"Some Error Occured Refresh or Restart a website"});
+      res
+        .status(501)
+        .json({ message: "Some Error Occured Refresh or Restart a website" });
       // Notify the user or take appropriate action
     } else {
       console.error("An error occurred:", error);
-      res.status(501).json({message:"Some Error Occured Refresh or Restart a website"});
+      res
+        .status(501)
+        .json({ message: "Some Error Occured Refresh or Restart a website" });
     }
   }
 }

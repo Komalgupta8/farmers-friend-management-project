@@ -1,6 +1,7 @@
 const axios = require('axios');
 const UserModel = require('../Models/UserSchema');
 const jwt = require('jsonwebtoken');
+const { verifyToken } = require('./JwtVerify');
 
 
 const getWeatherReport = async (location, key) => {
@@ -15,13 +16,6 @@ const getWeatherReport = async (location, key) => {
   }
 };
 
-const verifyToken = (token, secretKey) => {
-  try {
-    return jwt.verify(token, secretKey);
-  } catch (error) {
-    throw new Error('Invalid token');
-  }
-};
 
 const getUserLocation = async (id) => {
   try {
@@ -35,14 +29,13 @@ const getUserLocation = async (id) => {
 exports.weatherReport = async (req, res) => {
   const token = req.headers.authtoken;
   const key = process.env.Weather_API;
-  const secretKey = process.env.JWT_SECRET_KEY;
 
   if (!token) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
 
   try {
-    const decoded = verifyToken(token, secretKey);
+    const decoded = verifyToken(token);
     if (!decoded.response._id) {
       return res.status(401).json({ message: 'Invalid token' });
     }
