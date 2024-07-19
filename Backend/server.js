@@ -6,6 +6,10 @@ const DashboardRoutes = require('./Routes/DashboardRoutes');
 require("./Connection/conn")
 const cookieParser = require('cookie-parser');
 const AiRoutes = require('./Routes/AiRoutes');
+const cors = require('cors');
+
+app.use(cors());
+
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
