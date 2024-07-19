@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 
 exports.createUser = async (req, res) => {
   const { Username, Email, PhoneNumber, Address, Password } = req.body;
+  console.log(req.body);
   try {
     const existingUser = await UserModel.findOne({
       $or: [
