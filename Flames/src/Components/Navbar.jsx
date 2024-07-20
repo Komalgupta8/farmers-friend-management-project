@@ -13,10 +13,6 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-const signOut = () =>{
-  localStorage.clear();
-  location.reload();
-}
 export default function Navbar() {
   return (
     <Disclosure as="nav" className="bg-gray-800">
@@ -64,14 +60,14 @@ export default function Navbar() {
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 <a href="/checkout">
-              <button type="button" class="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-          <span class="absolute -inset-1.5"></span>
-          <span class="sr-only">View Cart</span>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
-             <path fill-rule="evenodd" d="M7.5 6v.75H5.513c-.96 0-1.764.724-1.865 1.679l-1.263 12A1.875 1.875 0 004.25 22.5h15.5a1.875 1.875 0 001.865-2.071l-1.263-12a1.875 1.875 0 00-1.865-1.679H16.5V6a4.5 4.5 0 10-9 0zM12 3a3 3 0 00-3 3v.75h6V6a3 3 0 00-3-3zm-3 8.25a3 3 0 106 0v-.75a.75.75 0 011.5 0v.75a4.5 4.5 0 11-9 0v-.75a.75.75 0 011.5 0v.75z" clip-rule="evenodd" />
-          </svg>
-        </button>
-        </a>
+                  <button type="button" className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                    <span className="absolute -inset-1.5"></span>
+                    <span className="sr-only">View Cart</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                      <path fillRule="evenodd" d="M7.5 6v.75H5.513c-.96 0-1.764.724-1.865 1.679l-1.263 12A1.875 1.875 0 004.25 22.5h15.5a1.875 1.875 0 001.865-2.071l-1.263-12a1.875 1.875 0 00-1.865-1.679H16.5V6a4.5 4.5 0 10-9 0zM12 3a3 3 0 00-3 3v.75h6V6a3 3 0 00-3-3zm-3 8.25a3 3 0 106 0v-.75a.75.75 0 011.5 0v.75a4.5 4.5 0 11-9 0v-.75a.75.75 0 011.5 0v.75z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </a>
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-3">
                   <div>
@@ -98,22 +94,21 @@ export default function Navbar() {
                       <Menu.Item>
                         {({ active }) => (
                           <a
-                            href="/profile/:id"
+                            href="/signin"
                             className={classNames(active ? 'bg-gray-900' : '', 'block px-4 py-2 text-sm text-white')}
                           >
-                            Your Profile
+                            Sign in
                           </a>
                         )}
                       </Menu.Item>
                       <Menu.Item>
                         {({ active }) => (
-                          <button
-                            type='submit'
-                            onClick={signOut}
-                            className={classNames(active ? 'text-start bg-gray-900 w-full' : '', 'w-full block text-start px-4 py-2 text-sm text-white')}
+                          <a
+                            href="/Farmersignup"
+                            className={classNames(active ? 'bg-gray-900' : '', 'block px-4 py-2 text-sm text-white')}
                           >
-                            Sign out
-                          </button>
+                            Sign up
+                          </a>
                         )}
                       </Menu.Item>
                     </Menu.Items>
