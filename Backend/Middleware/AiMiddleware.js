@@ -49,7 +49,7 @@ async function run(farmData) {
 
     const prompt = `Please recommend the best crop to grow, along with suitable fertilizer, pesticide, and seed options for maximum profit, given the following farm data: ${JSON.stringify(
       farmData
-    )}. Consider AreaSize in acres. For fertilizer, provide Name, Quantity, and Application Method. For pesticide, provide Name, Quantity, and Application Method. For seeds, provide Name, Variety, and Quantity. For profit potential, give a reason as well. Give all data in JSON format without asterisks (*) or any special characters. Do not provide any explanations, important considerations, or disclaimers about consulting local agricultural experts. Also, provide a detailed day-wise roadmap for farming activities in JSON format. Ensure all data is given in JSON format under any condition. Do not include extra backticks in the starting, or the terms 'json' or 'backtick' , extra comma(,) in the response.There is one condition a user give same data Thousand Time u don;t chage your response.
+    )}. Consider AreaSize in acres. For fertilizer, provide Name, Quantity, and Application Method. For pesticide, provide Name, Quantity, and Application Method. For seeds, provide Name, Variety, and Quantity. For profit potential, give a reason as well. Give all data in JSON format without asterisks (*) or any special characters. Do not provide any explanations, important considerations, or disclaimers about consulting local agricultural experts.Ensure all data is given in JSON format under any condition. Do not include extra backticks in the starting, or the terms 'json' or 'backtick' , extra comma(,) in the response.There is one condition a user give same data Thousand Time u don;t chage your response.
   Every Time You Use This Pattern And This Key Value:
   {
     Crop: 'Data',
@@ -74,14 +74,7 @@ async function run(farmData) {
     }
   ],
   Seeds: { Name: 'Data', Variety: 'Data', Quantity: 'Data' },
-  ProfitPotential: 'Data',
-  FarmingRoadmap: [
-    { Day: Data, Activity: 'Data' },
-    { Day: Data, Activity: 'Data' },
-    { Day: Data, Activity: 'Data' },
-    { Day: Data, Activity: 'Data' },
-    { Day: Data, Activity: 'Data' }
-  ]
+  ProfitPotential: 'Data'
 }`;
 
     const result = await model.generateContent(prompt);

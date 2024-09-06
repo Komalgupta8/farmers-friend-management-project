@@ -6,6 +6,7 @@ const { verifyToken } = require('./JwtVerify');
 
 const getWeatherReport = async (location, key) => {
   try {
+    console.log(`Using API key: ${key}`); 
     const weatherResponse = await axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=${key}`);
     const weatherData = weatherResponse.data;
     const tempCelsius = weatherData.main.temp;
@@ -45,6 +46,6 @@ exports.weatherReport = async (req, res) => {
     return res.send(`Your Weather Report => ${weatherReport}`);
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: `server error: ${error.message}` });
   }
 }; 
