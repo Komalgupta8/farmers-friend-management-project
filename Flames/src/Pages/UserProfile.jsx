@@ -5,7 +5,7 @@ const UserProfile = () => {
   const id = localStorage.getItem("userId")
   const [records, setRecords] = useState([])
   useEffect(()=>{
-       axios.get(`http://localhost:7000/user/getUserById/${id}`)
+       axios.get(`http://localhost:3000/user/getUserById/${id}`)
        .then(res=> setRecords(res.data))
        .catch(error=>console.log(error));
   }, [id])

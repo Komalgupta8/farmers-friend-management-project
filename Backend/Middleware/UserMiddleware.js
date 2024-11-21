@@ -56,7 +56,7 @@ exports.LoginUser = async (req, res) => {
       const pass = response.Password;
       const check = await bcrypt.compare(Password, pass);
       if (check == true) {
-        const token = jwt.sign({ response }, process.env.JWT_SECRET_KEY, {
+        const token = jwt.sign({ response }, "farmerproject", {
           expiresIn: "5hr",
         });
         return res
@@ -68,6 +68,7 @@ exports.LoginUser = async (req, res) => {
     }
     return res.status(501).json({ message: "User Not found" });
   } catch (error) {
+    console.log(error)
     res.status(501).json({ message: "Problem Is occured", error });
   }
 };

@@ -7,6 +7,7 @@ import UserProfile from './Pages/UserProfile';
 import Farmersignup from './Pages/FarmerSignup';
 import EditProfile from './Pages/EditProfile';
 
+
 const isAuthenticated = () => {
   const accessToken = localStorage.getItem('accessToken');
   return !!accessToken; // Returns true if there is an access token, false otherwise
@@ -46,6 +47,7 @@ function App() {
       </Route>
       <Route path="signin" element={<Signin />} />
       <Route path="farmersignup" element={<Farmersignup />} />
+      
     </Routes>
   );
 }

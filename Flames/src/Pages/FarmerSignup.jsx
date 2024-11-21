@@ -38,7 +38,7 @@ const Farmersignup = () => {
       toast.error("Terms and conditions not agreed");
     } else {
       try {
-        const response = await axios.post("http://localhost:7000/signup", {
+        const response = await axios.post("http://localhost:3000/signup", {
           Username: values.Username,
           PhoneNumber: values.PhoneNumber,
           Email: values.Email,

@@ -10,7 +10,6 @@ const cors = require('cors');
 
 app.use(cors());
 
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -20,14 +19,13 @@ app.get('/', (req, res) => {
   res.send('Homepage');
 });
 
+
 app.use(UserRoutes)
 app.use(DashboardRoutes)
 app.use(AiRoutes)
 
 
-
-
-app.listen(process.env.PORT, () => {
+app.listen(3000, () => {
   console.log('Server started');
 });
 
